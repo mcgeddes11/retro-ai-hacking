@@ -1,0 +1,3 @@
+gym-retro
+stable-baselines3
+opencv-python

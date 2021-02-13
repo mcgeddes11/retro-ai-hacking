@@ -1,0 +1,9 @@
+1. Create new env python=3.7
+2. Install gym-retro
+3. Install Tensorflow==1.15
+4. Clone and install OpenAI baselines: https://github.com/openai/baselines
+5. Clone and install stable-baselines:
+5. Integrate your game
+6. Edit make_retro() call in retro.examples.ppo.py to include Contrib games
+7. Edit retro.examples.ppo to wrap the environment in an instance of baselines.bench.Monitor
+n. Run: python -m retro.examples.ppo --game <game-name>
