@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import os
 import shutil
-from utils import TetrisDiscretizer
+from wrappers import TetrisDiscretizer
 
 def main(game, state, scenario, video_filename=None):
 

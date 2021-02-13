@@ -1,6 +1,6 @@
 import retro
 from retro.examples.brute import Frameskip, TimeLimit, Brute, EXPLORATION_PARAM
-from utils import TetrisDiscretizer, SuperMarioKartDiscretizer, FzeroDiscretizer
+from wrappers import TetrisDiscretizer, SuperMarioKartDiscretizer, FzeroDiscretizer
 
 # game = "Tetris-Nes"
 # scenario = "C:\\Projects\\OpenAI Games\\retro-gym-hacking\\scenarios\\Tetris-Nes\\custom_rewards.json"

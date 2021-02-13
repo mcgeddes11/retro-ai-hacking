@@ -1,6 +1,7 @@
 import retro
-from utils import TetrisDiscretizer, SuperMarioKartDiscretizer
+from wrappers import TetrisDiscretizer, SuperMarioKartDiscretizer, SuperMarioKartObservationWrapper, RewardScaler, SuperMarioKartRewardWrapper
 from stable_baselines3.common.atari_wrappers import WarpFrame
+
 
 
 def main(game, state, scenario):
@@ -10,7 +11,8 @@ def main(game, state, scenario):
         env = TetrisDiscretizer(env)
     elif game == "SuperMarioKart-Snes":
         env = SuperMarioKartDiscretizer(env)
-    env = WarpFrame(env)
+    env = SuperMarioKartObservationWrapper(env)
+
 
     obs = env.reset()
     cumulative_reward = 0
@@ -36,11 +38,11 @@ def main(game, state, scenario):
 if __name__ == "__main__":
     # game = "Tetris-Nes"
     # scenario = "C:\\Projects\\OpenAI Games\\retro-gym-hacking\\scenarios\\Tetris-Nes\\custom_rewards.json"
-    # state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai\\Lib\\site-packages\\retro\\data\\contrib\\Tetris-Nes\\Type.A.level.0.mid.state"
+    # state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai_3\\Lib\\site-packages\\retro\\data\\contrib\\Tetris-Nes\\Type.A.level.0.mid.state"
     # game = "NHLHockey94-Genesis"
     # scenario = "C:\\Projects\\OpenAI Games\\retro-gym-hacking\\scenarios\\NHLHockey94-Genesis\\custom_rewards.json"
-    # state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai\\Lib\\site-packages\\retro\\data\\contrib\\NHLHockey94-Genesis\\LAK.MTL.Regular.1P.fastclock.state"
+    # state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai_3\\Lib\\site-packages\\retro\\data\\contrib\\NHLHockey94-Genesis\\LAK.MTL.Regular.1P.fastclock.state"
     game = "SuperMarioKart-Snes"
     scenario = "C:\\Projects\\OpenAI Games\\retro-gym-hacking\\scenarios\\SuperMarioKart-Snes\\custom_rewards.json"
-    state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai\\Lib\\site-packages\\retro\\data\\contrib\\SuperMarioKart-Snes\\MarioCircuit1.GP.50cc.1P.Koopa.Start.state"
+    state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai_3\\Lib\\site-packages\\retro\\data\\contrib\\SuperMarioKart-Snes\\MarioCircuit1.GP.50cc.1P.Luigi.Start.state"
     main(game, state, scenario)

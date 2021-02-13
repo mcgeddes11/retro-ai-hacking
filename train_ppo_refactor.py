@@ -5,7 +5,8 @@ from stable_baselines3.ppo import PPO, MlpPolicy, CnnPolicy
 from stable_baselines3.a2c import A2C
 from stable_baselines3.common.atari_wrappers import WarpFrame
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecCheckNan, VecNormalize
-from utils import TetrisDiscretizer, SuperMarioKartDiscretizer, FzeroDiscretizer
+from wrappers import TetrisDiscretizer, SuperMarioKartDiscretizer, FzeroDiscretizer, RewardScaler, SuperMarioKartObservationWrapper
+from retro.examples.brute import Frameskip, TimeLimit, Brute
 from stable_baselines3.common.monitor import Monitor
 
 # game = "Tetris-Nes"
@@ -35,13 +36,15 @@ elif game == "SuperMarioKart-Snes":
     env = SuperMarioKartDiscretizer(env)
 elif game == "Fzero-Snes":
     env = FzeroDiscretizer(env)
-env = WarpFrame(env)
+env = SuperMarioKartObservationWrapper(env)
+env = Frameskip(env)
+env = RewardScaler(env)
 env = Monitor(env)
 
 # n_cpus = 4
 # env = SubprocVecEnv([lambda: env for i in range(n_cpus)])
 env = DummyVecEnv([lambda: env])
-env = VecNormalize(env, norm_obs=True, norm_reward=False)
+# env = VecNormalize(env, norm_obs=True, norm_reward=False)
 env = VecCheckNan(env, raise_exception=True)
 
 savefile_name = game + "-ppo"
@@ -51,10 +54,9 @@ if os.path.exists(savefile_name):
 else:
     model = PPO(CnnPolicy,
                  env,
-                 # verbose=1,
-                 # n_steps=128,
-                 # learning_rate=5.0e-4,
-                 # ent_coef=0.2,
+                 verbose=1,
+                 n_steps=2048,
+                 learning_rate=2.5e-2,
                  tensorboard_log="C:\\Projects\\OpenAI Games\\retro-gym-hacking\\tb_logs")
 model.learn(total_timesteps=100000)
 model.save(savefile_name)
