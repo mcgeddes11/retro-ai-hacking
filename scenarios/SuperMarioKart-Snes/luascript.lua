@@ -87,7 +87,7 @@ function compute_reward()
     end
     -- Speed reward
     if data.speed > 100 then
-        speed_reward = 0.1
+        speed_reward = 0.5
     else
         speed_reward = 0
     end
@@ -95,22 +95,11 @@ function compute_reward()
     if data.surface_type_code == 40 then
         surface_reward = 0
     else
-        surface_reward = -0.5
-    end
-    -- backwards penalty
-    if data.flow ~= 0 then
-        backward_penalty = 0
-    else
-        backward_penalty = 0
+        surface_reward = -1.0
     end
 
 
---    total_reward = speed_reward + checkpoint_reward + surface_reward + backward_penalty
-    if data.clock <= 0 then
-        total_reward = 0
-    else
-        total_reward = checkpoint_reward + speed_reward + surface_reward
-    end
-
+    total_reward = speed_reward + checkpoint_reward + surface_reward
+--    total_reward = checkpoint_reward
     return total_reward
 end

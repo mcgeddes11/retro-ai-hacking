@@ -22,6 +22,16 @@ class SuperMarioKartObservationWrapper(gym.ObservationWrapper):
     def observation(self, frame: np.ndarray):
         return frame[0:112,:,:]
 
+    def get_map(self):
+        map = np.zeros((128,128))
+        for x in range(1,128):
+            for y in range(1,128):
+                address = 8323072+((x-1)+(y-1)*128)*1
+                tile = self.env.env.data.memory.extract(address, "|i1")
+                map[x-1, y-1] = tile
+
+
+
 class RewardScaler(gym.RewardWrapper):
     """
     Bring rewards to a reasonable scale for PPO.
