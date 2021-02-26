@@ -1,5 +1,7 @@
 import cv2
 
+code_location = "C:\\Projects\\OpenAI Games\\retro-ai-hacking\\"
+
 def rotate_image(image, angle, center=None, scale=1.0):
     # grab the dimensions of the image
     (h, w) = image.shape[:2]

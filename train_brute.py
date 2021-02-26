@@ -1,23 +1,14 @@
 import retro
+import os
 from retro.examples.brute import Frameskip, TimeLimit, Brute, EXPLORATION_PARAM
 from wrappers import TetrisDiscretizer, SuperMarioKartDiscretizer, FzeroDiscretizer
 from train_ppo_refactor import get_env
-
-# game = "Tetris-Nes"
-# scenario = "C:\\Projects\\OpenAI Games\\retro-ai-hacking\\scenarios\\Tetris-Nes\\custom_rewards.json"
-# state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai\\Lib\\site-packages\\retro\\data\\contrib\\Tetris-Nes\\Type.A.level.9.start.state"
-
-# game = "NHLHockey94-Genesis"
-# scenario = "C:\\Projects\\OpenAI Games\\retro-ai-hacking\\scenarios\\NHLHockey94-Genesis\\custom_rewards.json"
-# state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai\\Lib\\site-packages\\retro\\data\\contrib\\NHLHockey94-Genesis\\LAK.MTL.Regular.1P.fastclock.state"
+from utils import code_location
 
 game = "SuperMarioKart-Snes"
-scenario = "C:\\Projects\\OpenAI Games\\retro-ai-hacking\\scenarios\\SuperMarioKart-Snes\\custom_rewards.json"
-state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai\\Lib\\site-packages\\retro\\data\\contrib\\SuperMarioKart-Snes\\MarioCircuit1.GP.50cc.1P.Luigi.Start.state"
+scenario = os.path.join(code_location, "scenarios", game, "custom_rewards.json")
+state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "MarioCircuit1.GP.50cc.1P.Luigi.Start.state")
 
-# game = "Fzero-Snes"
-# scenario = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai\\Lib\\site-packages\\retro\\data\\contrib\\Fzero-Snes\\scenario.json"
-# state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai\\Lib\\site-packages\\retro\\data\\contrib\\Fzero-Snes\\practice.mutecity.bluefalcon.norival.start.state"
 
 max_episode_steps = 10000
 timestep_limit = 1e8

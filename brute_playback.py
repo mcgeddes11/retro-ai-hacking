@@ -1,10 +1,13 @@
 import retro
+import os
 from train_ppo_refactor import get_env
 import numpy
+from utils import code_location
+
 
 game = "SuperMarioKart-Snes"
-scenario = "C:\\Projects\\OpenAI Games\\retro-ai-hacking\\scenarios\\SuperMarioKart-Snes\\custom_rewards.json"
-state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai\\Lib\\site-packages\\retro\\data\\contrib\\SuperMarioKart-Snes\\MarioCircuit1.GP.50cc.1P.Luigi.Start.state"
+scenario = os.path.join(code_location, "scenarios", game, "custom_rewards.json")
+state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "MarioCircuit1.GP.50cc.1P.Luigi.Start.state")
 
 filename = "best_acts.txt"
 

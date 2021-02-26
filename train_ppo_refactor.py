@@ -11,6 +11,7 @@ from retro.examples.brute import Frameskip, TimeLimit, Brute
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import CheckpointCallback
 from environments import SuperMarioKartEnv
+from utils import code_location
 
 
 def get_env(game, state, scenario):
