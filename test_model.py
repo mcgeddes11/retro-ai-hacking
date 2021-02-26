@@ -25,7 +25,7 @@ state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai_3\\Lib\\site-packages\\r
 # scenario = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai\\Lib\\site-packages\\retro\\data\\contrib\\Fzero-Snes\\scenario.json"
 # state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai_3\\Lib\\site-packages\\retro\\data\\contrib\\Fzero-Snes\\practice.mutecity.bluefalcon.norival.start.state"
 
-model_name = "C:\\Projects\\OpenAI Games\\retro-ai-hacking\\models\\ppo-" + game + "-final"
+model_name = "C:\\Projects\\OpenAI Games\\retro-ai-hacking\\models\\ppo-" + game + "_400000_steps"
 
 
 
