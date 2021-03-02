@@ -12,16 +12,17 @@ from utils import code_location
 
 game = "SuperMarioKart-Snes"
 scenario = os.path.join(code_location, "scenarios", game, "custom_rewards.json")
+# state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "MarioCircuit1.GP.100cc.1P.DK.Start.state")
 state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "MarioCircuit1.GP.50cc.1P.Luigi.Start.state")
 # state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "DonutPlains1.GP.50cc.1P.Koopa.Start.state")
 
-model_name = os.path.join(code_location, "models", "ppo_SuperMarioKart-Snes_a968c481-fb71-4a3f-8010-00464ba438c4_final")
+model_name = os.path.join(code_location, "models", "ppo_SuperMarioKart-Snes_e304080a-dd37-4efa-9140-aecc0079e710_final")
 
 
 env = get_env(game, state, scenario)
 # Record a movie of the output
-moviepath = "testmodel.avi"
-env = MovieRecordWrapper(env, savedir=moviepath)
+# moviepath = "testmodel.mp4"
+# env = MovieRecordWrapper(env, savedir=moviepath)
 
 
 env = DummyVecEnv([lambda: env])
