@@ -3,32 +3,32 @@ import numpy as np
 from gym import spaces
 import cv2
 
-class SuperMarioKartRewardWrapper(gym.RewardWrapper):
-
-    def __init__(self, env: gym.Env):
-        gym.RewardWrapper.__init__(self, env)
-        self.previous_reward = None
-
-    def reward(self, reward: float) -> float:
-        """Just return current reward for now"""
-        return reward
-
-class SuperMarioKartObservationWrapper(gym.ObservationWrapper):
-
-    def __init__(self, env: gym.Env):
-        gym.ObservationWrapper.__init__(self, env)
-        self.observation_space = gym.spaces.Box(low=0, high=255,
-                   shape=(112,256,3), dtype=np.uint8)
-    def observation(self, frame: np.ndarray):
-        return frame[0:112,:,:]
-
-    def get_map(self):
-        map = np.zeros((128,128))
-        for x in range(1,128):
-            for y in range(1,128):
-                address = 8323072+((x-1)+(y-1)*128)*1
-                tile = self.env.env.data.memory.extract(address, "|i1")
-                map[x-1, y-1] = tile
+# class SuperMarioKartRewardWrapper(gym.RewardWrapper):
+#
+#     def __init__(self, env: gym.Env):
+#         gym.RewardWrapper.__init__(self, env)
+#         self.previous_reward = None
+#
+#     def reward(self, reward: float) -> float:
+#         """Just return current reward for now"""
+#         return reward
+#
+# class SuperMarioKartObservationWrapper(gym.ObservationWrapper):
+#
+#     def __init__(self, env: gym.Env):
+#         gym.ObservationWrapper.__init__(self, env)
+#         self.observation_space = gym.spaces.Box(low=0, high=255,
+#                    shape=(112,256,3), dtype=np.uint8)
+#     def observation(self, frame: np.ndarray):
+#         return frame[0:112,:,:]
+#
+#     def get_map(self):
+#         map = np.zeros((128,128))
+#         for x in range(1,128):
+#             for y in range(1,128):
+#                 address = 8323072+((x-1)+(y-1)*128)*1
+#                 tile = self.env.env.data.memory.extract(address, "|i1")
+#                 map[x-1, y-1] = tile
 
 
 
@@ -78,21 +78,32 @@ class Rgb2gray(gym.ObservationWrapper):
         return frame[:,:,None]
 
 
-class MovieRecord(gym.Wrapper):
-    def __init__(self, env, savedir, k):
+class MovieRecordWrapper(gym.Wrapper):
+    def __init__(self, env, savedir):
         gym.Wrapper.__init__(self, env)
         self.savedir = savedir
-        self.k = k
-        self.epcount = 0
+        self.video_handle = None
 
     def reset(self):
-        if self.epcount % self.k == 0:
-            self.env.unwrapped.movie_path = self.savedir
+        if self.video_handle is None:
+            # Get the screen image to determine video size
+            img_array = self.env.render(mode="rgb_array")
+            width = img_array.shape[1]
+            height = img_array.shape[0]
+            # Open the video stream
+            self.video_handle = cv2.VideoWriter(self.savedir,cv2.VideoWriter_fourcc('M','P','4','V'), 30, (width,height))
         else:
-            self.env.unwrapped.movie_path = None
-            self.env.unwrapped.movie = None
-        self.epcount += 1
+            self.video_handle.release()
+            self.video_handle = None
+
         return self.env.reset()
+
+    def step(self, action):
+        # get rgb image
+        img_array = self.render(mode="rgb_array")
+        # flip channels because opencv is dumb
+        self.video_handle.write(img_array[:,:,[2,1,0]])
+        return self.env.step(action)
 
 
 class Discretizer(gym.ActionWrapper):
@@ -139,5 +150,4 @@ class SuperMarioKartDiscretizer(Discretizer):
 class FzeroDiscretizer(Discretizer):
     def __init__(self, env):
         super().__init__(env=env, combos=[['B'], ['LEFT', 'B'], ['RIGHT', 'B']])
-
 

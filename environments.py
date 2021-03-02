@@ -10,7 +10,8 @@ from utils import rotate_image
 
 class SuperMarioKartEnv(RetroEnv):
 
-    def __init__(self, game, state=retro.State.DEFAULT, scenario=None, sprite_buffer=20, **kwargs):
+    def __init__(self, game, state=retro.State.DEFAULT, scenario=None, sprite_buffer=20,
+                 **kwargs):
         RetroEnv.__init__(self, game, state, scenario, **kwargs)
         self.map = None
         self.sprite_buffer = sprite_buffer # defines visual area around kart; values 5-50 probably fine
@@ -96,6 +97,7 @@ class SuperMarioKartEnv(RetroEnv):
                 address = base_tile_address+((x-1)+(y-1)*128)*1
                 tile = self.data.memory.extract(address, "|u1")
                 # extract physics elements of each tile
+                # physics = self.get_road_physics(self.data.memory.extract(base_physics_address+tile, "|u1"))
                 physics = self.get_physics(self.data.memory.extract(base_physics_address+tile, "|u1"))
                 map[x-1, y-1] = physics
         map = np.fliplr(map)
@@ -148,6 +150,32 @@ class SuperMarioKartEnv(RetroEnv):
                 self.viewer = SimpleImageViewer(maxwidth=width)
             self.viewer.imshow(actual_game_image)
             return self.viewer.isopen
+
+    def get_road_physics(self, physics):
+        if physics == int("0x40", 16):  # --road
+            return 1
+        elif physics == int("0x46",16): # --dirt road
+            return 1
+        elif physics == int("0x42",16): # --ghost road
+            return 1
+        elif physics == int("0x4E",16): # --light ghost road
+            return 1
+        elif physics == int("0x50",16): # --wood bridge
+            return 1
+        elif physics == int("0x1E",16): # --starting line
+            return 1
+        elif physics == int("0x44",16): # --castle road
+            return 1
+        elif physics == int("0x16",16): # --speed boost
+            return 2
+        elif physics == int("0x10",16): # --jump pad
+            return 1.5
+        elif physics == int("0x4C",16): # --choco road
+            return 1
+        elif physics == int("0x4A",16): # --sand road
+            return 1
+        else:
+            return 0
 
     def get_physics(self, physics):
         if physics == int("0x54",16): # --dirt

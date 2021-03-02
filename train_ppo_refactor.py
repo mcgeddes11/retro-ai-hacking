@@ -6,7 +6,7 @@ from stable_baselines3.ppo import PPO, MlpPolicy, CnnPolicy
 from stable_baselines3.a2c import A2C
 from stable_baselines3.common.atari_wrappers import WarpFrame
 from stable_baselines3.common.vec_env import DummyVecEnv, SubprocVecEnv, VecCheckNan, VecNormalize
-from wrappers import TetrisDiscretizer, SuperMarioKartDiscretizer, FzeroDiscretizer, RewardScaler, SuperMarioKartObservationWrapper
+from wrappers import TetrisDiscretizer, SuperMarioKartDiscretizer, FzeroDiscretizer, RewardScaler
 from retro.examples.brute import Frameskip, TimeLimit, Brute
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import CheckpointCallback
@@ -55,23 +55,32 @@ if __name__ == "__main__":
     # scenario = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai_3\\Lib\\site-packages\\retro\\data\\contrib\\Fzero-Snes\\scenario.json"
     # state = "C:\\Users\\joncocks\\anaconda3\\envs\\retro_ai_3\\Lib\\site-packages\\retro\\data\\contrib\\Fzero-Snes\\practice.mutecity.bluefalcon.norival.start.state"
 
-    n_cpus = 4
+    experiment_id = str(uuid4())
+
+    n_cpus = 8
     env = SubprocVecEnv([lambda: get_env(game, state, scenario) for i in range(n_cpus)])
     # env = DummyVecEnv([lambda: get_env(game, state, scenario)])
     # env = VecNormalize(env, norm_obs=True, norm_reward=False)
     env = VecCheckNan(env, raise_exception=True)
 
     # Create a callback to save every n timesteps
-    checkpoint_callback = CheckpointCallback(save_freq=100000, save_path="C:\\Projects\\OpenAI Games\\retro-ai-hacking\\models", name_prefix="ppo-" + game)
+    prefix = "ppo_" + game + "_" + experiment_id
+    checkpoint_callback = CheckpointCallback(save_freq=100000, save_path="C:\\Projects\\OpenAI Games\\retro-ai-hacking\\models", name_prefix=prefix)
 
-    savefile_name = os.path.join("C:\\Projects\\OpenAI Games\\retro-ai-hacking\\models", "ppo-" + game + "-final")
+    savefile_name = prefix + "_final"
+
+    savefile_name = os.path.join("C:\\Projects\\OpenAI Games\\retro-ai-hacking\\models", savefile_name)
 
     model = PPO(CnnPolicy,
                  env,
                  verbose=1,
-                 n_steps=1024,
-                 learning_rate=2.5e-2,
+                 n_steps=128,
+                 n_epochs=3,
+                 learning_rate=2.5e-4,
+                 batch_size=32,
+                 ent_coef=0.01,
+                 vf_coef=1.0,
                  tensorboard_log="C:\\Projects\\OpenAI Games\\retro-ai-hacking\\tb_logs")
-    model.learn(total_timesteps=500000, callback=checkpoint_callback)
+    model.learn(total_timesteps=1000000, callback=checkpoint_callback)
     model.save(savefile_name)
 
