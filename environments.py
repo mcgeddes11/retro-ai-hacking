@@ -23,7 +23,7 @@ class SuperMarioKartEnv(RetroEnv):
         game_mode = self.data.memory.extract(game_mode_var["address"], game_mode_var["type"])
 
         # Get kart direction
-        direction = self.data.memory.extract(int("0x95", 16), "<u2")
+        direction = self.data.memory.extract(int("0x95", 16), "|u1")
 
         # adjust the direction
         direction = (direction / 255) * 360
