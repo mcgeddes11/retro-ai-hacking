@@ -66,7 +66,6 @@ class SuperMarioKartEnv(RetroEnv):
                     p_east_rel = math.floor(((position_dict["east"] / 4100.0) * 128))
                     this_map[p_south_rel, p_east_rel,:] = self.colormap["enemykart"]
 
-            # Rotate
             # Pad using sprite buffer
             # Original image generated from RAM is 128x128
             a = np.concatenate((np.zeros((128, self.sprite_buffer, 3)), this_map), axis=1)
@@ -77,7 +76,8 @@ class SuperMarioKartEnv(RetroEnv):
             # Now need to account for padding
             smallmap = a[player_position_south_relative:player_position_south_relative + self.sprite_buffer*2,
                    player_position_east_relative:player_position_east_relative+self.sprite_buffer*2, :]
-
+            # Rotate
+            smallmap = rotate_image(smallmap, direction).astype("uint8")
             # Scale back to 128x128 dimensions CNN can handle
             dim = (128, 128)
             smallbigmap = cv2.resize(smallmap, dim, interpolation=cv2.INTER_AREA)
