@@ -15,7 +15,16 @@ class SuperMarioKartEnv(RetroEnv):
         RetroEnv.__init__(self, game, state, scenario, **kwargs)
         self.map = None
         self.sprite_buffer = sprite_buffer # defines visual area around kart; values 5-50 probably fine
-        # TODO: update observation space here
+
+        # colormap for physics representation on overhead map
+        self.colormap = {"road": [175,175,175],
+                         "slowroad": [210,210,210],
+                         "offroad": [255,255,255],
+                         "outofbounds": [0,0,0],
+                         "coins": [255,255,0],
+                         "playerkart": [255,0,0],
+                         "enemykart": [0,0,255]}
+
 
     def get_screen(self, player=0):
         # Check the game mode
@@ -35,7 +44,7 @@ class SuperMarioKartEnv(RetroEnv):
         else:
             # Update the base map layer if necessary
             if self.map is None:
-                self.map = self.read_map()
+                self.map = self.read_map().astype("uint8")
             # Make a copy and update the map with player position
             this_map = np.copy(self.map)
             # Get scaled player position on map
@@ -43,13 +52,10 @@ class SuperMarioKartEnv(RetroEnv):
             player_position_south = self.data.memory.extract(8257676, "<u2")
             player_position_east_relative = math.floor((player_position_east / 4100) * 128)
             player_position_south_relative = math.floor((player_position_south / 4100) * 128)
-            # Scale the RGB inputs to get a greyscale map
-            this_map = np.floor(((this_map + np.abs(np.min(this_map))) / np.max(this_map)) * 255).astype("uint8")
-            this_map = np.reshape(this_map, (128,128,1))
-            this_map = np.concatenate((this_map, this_map, this_map), axis=2)
+
             # Update the player position to be red
-            this_map[player_position_south_relative, player_position_east_relative, 0] = 255
-            this_map[player_position_south_relative, player_position_east_relative, 1:2] = 0
+            this_map[player_position_south_relative, player_position_east_relative, :] = self.colormap["playerkart"]
+
             # add enemy karts
             positions = self.get_cpu_kart_pos()
             for player_num, position_dict in positions.items():
@@ -58,11 +64,7 @@ class SuperMarioKartEnv(RetroEnv):
                 else:
                     p_south_rel = math.floor(((position_dict["south"] / 4100.0) * 128))
                     p_east_rel = math.floor(((position_dict["east"] / 4100.0) * 128))
-                    this_map[p_south_rel, p_east_rel,2] = 255
-                    this_map[p_south_rel, p_east_rel, 0] = 0
-                    this_map[p_south_rel, p_east_rel, 1] = 0
-            this_map = this_map.astype("uint8")
-            # return this_map
+                    this_map[p_south_rel, p_east_rel,:] = self.colormap["enemykart"]
 
             # Rotate
             # Pad using sprite buffer
@@ -71,12 +73,10 @@ class SuperMarioKartEnv(RetroEnv):
             a = np.concatenate((a, np.zeros((128, self.sprite_buffer, 3))), axis=1)
             a = np.concatenate((a, np.zeros((self.sprite_buffer, 128+self.sprite_buffer*2, 3))), axis=0)
             a = np.concatenate((np.zeros((self.sprite_buffer, 128+self.sprite_buffer*2, 3)), a), axis=0)
-            a = a.astype("uint8")
 
             # Now need to account for padding
             smallmap = a[player_position_south_relative:player_position_south_relative + self.sprite_buffer*2,
                    player_position_east_relative:player_position_east_relative+self.sprite_buffer*2, :]
-            smallmap = rotate_image(smallmap, direction).astype("uint8")
 
             # Scale back to 128x128 dimensions CNN can handle
             dim = (128, 128)
@@ -91,18 +91,26 @@ class SuperMarioKartEnv(RetroEnv):
         # We read them all into a 128x128 matrix to represent the overhead map
         base_tile_address = 8323072
         base_physics_address = int("0xB00", 16)
-        map = np.zeros((128,128))
-        for x in range(1,128):
-            for y in range(1,128):
+        map = np.empty(shape=(128,128), dtype="object")
+        # map = np.zeros((128,128))
+        for x in range(1,129):
+            for y in range(1,129):
                 address = base_tile_address+((x-1)+(y-1)*128)*1
                 tile = self.data.memory.extract(address, "|u1")
                 # extract physics elements of each tile
-                # physics = self.get_road_physics(self.data.memory.extract(base_physics_address+tile, "|u1"))
-                physics = self.get_physics(self.data.memory.extract(base_physics_address+tile, "|u1"))
+                physics = self.get_generalizable_physics(self.data.memory.extract(base_physics_address+tile, "|u1"))
                 map[x-1, y-1] = physics
         map = np.fliplr(map)
         map = np.rot90(map)
+        map = self.get_map_from_physics_array(map)
         return map
+
+    def get_map_from_physics_array(self, physics_array):
+        map_image = np.zeros((128,128,3))
+        for row in range(0,128):
+            for col in range(0,128):
+                map_image[row,col,:] = self.colormap[physics_array[row,col]]
+        return map_image
 
     def get_cpu_kart_pos(self):
         pos = {}
@@ -151,31 +159,74 @@ class SuperMarioKartEnv(RetroEnv):
             self.viewer.imshow(actual_game_image)
             return self.viewer.isopen
 
-    def get_road_physics(self, physics):
-        if physics == int("0x40", 16):  # --road
-            return 1
+    def get_generalizable_physics(self, physics):
+
+        # map the following to "road"
+        # road, dirt road, ghost road, light ghost road, wood bridge, starting line, castle road, speed boost, jump pad,
+        # choco road, sand road, ? box
+
+        if physics == int("0x40", 16): # road
+            return "road"
         elif physics == int("0x46",16): # --dirt road
-            return 1
+            return "road"
         elif physics == int("0x42",16): # --ghost road
-            return 1
+            return "road"
         elif physics == int("0x4E",16): # --light ghost road
-            return 1
+            return "road"
         elif physics == int("0x50",16): # --wood bridge
-            return 1
+            return "road"
         elif physics == int("0x1E",16): # --starting line
-            return 1
+            return "road"
         elif physics == int("0x44",16): # --castle road
-            return 1
+            return "road"
         elif physics == int("0x16",16): # --speed boost
-            return 2
+            return "road"
         elif physics == int("0x10",16): # --jump pad
-            return 1.5
+            return "road"
         elif physics == int("0x4C",16): # --choco road
-            return 1
+            return "road"
         elif physics == int("0x4A",16): # --sand road
-            return 1
+            return "road"
+        elif physics == int("0x14",16): # --? box
+            return "road"
+        elif physics == int("0x54",16): # --dirt
+            return "offroad"
+        elif physics == int("0x5A",16): # --lily pads/grass
+            return "offroad"
+        elif physics == int("0x5C",16): # --shallow water
+            return "offroad"
+        elif physics == int("0x58",16): # --snow
+            return "offroad"
+        elif physics == int("0x1A",16): # --coin
+            return "road"
+        elif physics == int("0x52",16): # --loose dirt
+            return "slowroad"
+        elif physics == int("0x5E",16): # --mud
+            return "slowroad"
+        elif physics == int("0x48",16): # --wet sand
+            return "slowroad"
+        elif physics == int("0x12",16): # --choco bump
+            return "slowroad"
+        elif physics == int("0x1C",16): # --choco bump
+            return "slowroad"
+        elif physics == int("0x18",16): # --oil spill
+            return "slowroad"
+        elif physics == int("0x80",16): # --wall
+            return "outofbounds"
+        elif physics == int("0x26",16): # --oob grass
+            return "outofbounds"
+        elif physics == int("0x22",16): # --deep water
+            return "outofbounds"
+        elif physics == int("0x20",16): # --pit
+            return "outofbounds"
+        elif physics == int("0x82",16): # --ghost house border
+            return "outofbounds"
+        elif physics == int("0x24",16): # --lava
+            return "outofbounds"
+        elif physics == int("0x84",16): # --ice blocks
+            return "outofbounds"
         else:
-            return 0
+            return "offroad"
 
     def get_physics(self, physics):
         if physics == int("0x54",16): # --dirt

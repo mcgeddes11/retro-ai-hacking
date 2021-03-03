@@ -1,6 +1,6 @@
 import retro
 import os
-from wrappers import TetrisDiscretizer, SuperMarioKartDiscretizer, SuperMarioKartObservationWrapper, RewardScaler, SuperMarioKartRewardWrapper
+from wrappers import TetrisDiscretizer, SuperMarioKartDiscretizer, RewardScaler
 from stable_baselines3.common.atari_wrappers import WarpFrame
 from environments import SuperMarioKartEnv
 from matplotlib import pyplot as plt
@@ -48,4 +48,5 @@ if __name__ == "__main__":
     game = "SuperMarioKart-Snes"
     scenario = os.path.join(code_location, "scenarios", game, "custom_rewards.json")
     state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "MarioCircuit1.GP.50cc.1P.Luigi.Start.state")
+    # state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "DonutPlains1.GP.50cc.1P.Koopa.Start.state")
     main(game, state, scenario)
