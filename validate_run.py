@@ -47,6 +47,7 @@ def main(game, state, scenario):
 if __name__ == "__main__":
     game = "SuperMarioKart-Snes"
     scenario = os.path.join(code_location, "scenarios", game, "custom_rewards.json")
-    state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "MarioCircuit1.GP.50cc.1P.Luigi.Start.state")
+    # state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "MarioCircuit1.GP.50cc.1P.Luigi.Start.state")
     # state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "DonutPlains1.GP.50cc.1P.Koopa.Start.state")
+    state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "GhostHouse1.GP.50cc.1P.Koopa.Start.state")
     main(game, state, scenario)

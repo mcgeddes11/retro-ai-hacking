@@ -15,14 +15,17 @@ scenario = os.path.join(code_location, "scenarios", game, "custom_rewards.json")
 # state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "MarioCircuit1.GP.100cc.1P.DK.Start.state")
 state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "MarioCircuit1.GP.50cc.1P.Luigi.Start.state")
 # state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "DonutPlains1.GP.50cc.1P.Koopa.Start.state")
+# state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "GhostHouse1.GP.50cc.1P.Koopa.Start.state")
+# state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "MarioCircuit2.GP.50cc.1P.Koopa.Start.state")
 
-model_name = os.path.join(code_location, "models", "ppo_SuperMarioKart-Snes_e304080a-dd37-4efa-9140-aecc0079e710_final")
+
+model_name = os.path.join(code_location, "models", "ppo_SuperMarioKart-Snes_3eb631ae-7d94-4a0f-9499-fb1402d72bb4_final")
 
 
 env = get_env(game, state, scenario)
 # Record a movie of the output
-# moviepath = "testmodel.mp4"
-# env = MovieRecordWrapper(env, savedir=moviepath)
+moviepath = "3eb631ae-7d94-4a0f-9499-fb1402d72bb4.mp4"
+env = MovieRecordWrapper(env, savedir=moviepath)
 
 
 env = DummyVecEnv([lambda: env])

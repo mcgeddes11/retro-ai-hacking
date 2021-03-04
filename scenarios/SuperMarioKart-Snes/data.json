@@ -1,0 +1,72 @@
+{
+  "info": {
+    "checkpoint": {
+      "address": 8261852,
+      "type": "|u1"
+    },
+    "clock": {
+      "address": 257,
+      "type": "<d4"
+    },
+    "coins": {
+      "address": 8261120,
+      "type": "<u2"
+    },
+    "direction": {
+      "address": 149,
+      "type": "<i2"
+    },
+    "field_position": {
+      "address": 8261696,
+      "type": "<i4"
+    },
+    "flow": {
+      "address": 8261840,
+      "type": ">d6"
+    },
+    "game_mode": {
+      "address": 181,
+      "type": "|u1"
+    },
+    "lapnumber_code": {
+      "address": 8261825,
+      "type": "|u1"
+    },
+    "lapsize": {
+      "address": 8257864,
+      "type": "<i2"
+    },
+    "max_speed": {
+      "address": 8261846,
+      "type": "<i4"
+    },
+    "position_east": {
+      "address": 8257672,
+      "type": "<u2"
+    },
+    "position_south": {
+      "address": 8257676,
+      "type": "<u2"
+    },
+    "speed": {
+      "address": 8261866,
+      "type": "<i2"
+    },
+    "spinout_code": {
+      "address": 8261798,
+      "type": "<u2"
+    },
+    "status_flag": {
+      "address": 8261792,
+      "type": "<u2"
+    },
+    "surface_type_code": {
+      "address": 8261806,
+      "type": "<d2"
+    },
+    "track_code": {
+      "address": 8257828,
+      "type": "<i2"
+    }
+  }
+}

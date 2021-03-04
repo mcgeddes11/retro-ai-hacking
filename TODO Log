@@ -1,0 +1,7 @@
+- Definitely add penalties to reward function for:
+    - Falling off the track
+- Maybe add penalties to reward function for:
+    - Crashing into things (things it can detect e.g. walls, other karts)
+    - Spinning out
+
+- Generalize code to run on all tracks

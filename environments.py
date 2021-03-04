@@ -92,7 +92,6 @@ class SuperMarioKartEnv(RetroEnv):
         base_tile_address = 8323072
         base_physics_address = int("0xB00", 16)
         map = np.empty(shape=(128,128), dtype="object")
-        # map = np.zeros((128,128))
         for x in range(1,129):
             for y in range(1,129):
                 address = base_tile_address+((x-1)+(y-1)*128)*1
@@ -161,9 +160,10 @@ class SuperMarioKartEnv(RetroEnv):
 
     def get_generalizable_physics(self, physics):
 
-        # map the following to "road"
+        # Map the following to "road":
         # road, dirt road, ghost road, light ghost road, wood bridge, starting line, castle road, speed boost, jump pad,
-        # choco road, sand road, ? box
+        # choco road, sand road, ? box, coins
+        #
 
         if physics == int("0x40", 16): # road
             return "road"

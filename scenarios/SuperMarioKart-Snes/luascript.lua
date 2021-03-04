@@ -23,6 +23,7 @@ function done_check()
     -- race is over
     -- more than CHECKPOINT_UPDATE_BUFFER seconds and checkpoint hasn't updated
     CHECKPOINT_UPDATE_BUFFER = 300
+--    if data.lapnumber_code == 133 or clock_seconds > 120 then
     if data.lapnumber_code == 133 or clock_seconds > 120 or frames_since_checkpoint_update > CHECKPOINT_UPDATE_BUFFER or data.flow ~= 0 then
         return true
     else
@@ -71,13 +72,10 @@ function compute_reward()
     local total_reward, global_checkpoint, checkpoint_reward, speed_reward, surface_reward, backward_penalty
     total_reward = 0
 
---    if not is_gameplay() then
---        return 0
---    end
-
     -- Checkpoint rewards
     global_checkpoint = get_global_checkpoint()
     checkpoint_reward = 100 * (global_checkpoint - previous_global_checkpoint)
+
     -- Update previous global checkpoint
     if global_checkpoint ~= previous_global_checkpoint then
         previous_global_checkpoint = global_checkpoint
