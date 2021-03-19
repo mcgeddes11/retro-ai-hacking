@@ -5,3 +5,4 @@
     - Spinning out
 
 - Generalize code to run on all tracks
+- Fix off-track penalty to work properly on all tracks

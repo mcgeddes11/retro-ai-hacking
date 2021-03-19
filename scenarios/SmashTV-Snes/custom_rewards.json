@@ -1,0 +1,9 @@
+{
+  "done": {
+    "script": "lua:done_check"
+  },
+  "reward": {
+    "script": "lua:compute_reward"
+  },
+  "scripts": ["luascript.lua"]
+}

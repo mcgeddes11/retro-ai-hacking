@@ -11,8 +11,11 @@ from utils import code_location
 
 def main(game, state, scenario):
 
-    # env = retro.make(game=game, state=state, scenario=scenario, inttype=retro.data.Integrations.CONTRIB)
-    env = SuperMarioKartEnv(game, state, scenario, inttype=retro.data.Integrations.CONTRIB)
+    if game == "SuperMarioKart-Snes":
+        env = SuperMarioKartEnv(game, state, scenario, inttype=retro.data.Integrations.CONTRIB)
+    else:
+        env = retro.make(game=game, state=state, scenario=scenario, inttype=retro.data.Integrations.CONTRIB)
+
     if game == "Tetris-Nes":
         env = TetrisDiscretizer(env)
     elif game == "SuperMarioKart-Snes":
@@ -28,15 +31,15 @@ def main(game, state, scenario):
     while True:
         action = env.action_space.sample()
         obs, rew, done, info = env.step(env.action_space.sample())
-        print(action)
+        # print(action)
         # if rew != 0:
             # print("Reward!")
             # plt.imshow(obs)
         cumulative_reward = cumulative_reward + rew
-        print("Frame count: {}; Reward: {}".format(count, rew))
-        # if rew != 0:
-        #     print("Info: {}".format(info))
-        #     print("Reward: {}".format(rew))
+        # print("Frame count: {}; Reward: {}".format(count, rew))
+        if rew != 0:
+            print("Info: {}".format(info))
+            print("Reward: {}".format(rew))
         env.render()
         count +=1
         if done:
@@ -45,9 +48,15 @@ def main(game, state, scenario):
 
 
 if __name__ == "__main__":
-    game = "SuperMarioKart-Snes"
-    scenario = os.path.join(code_location, "scenarios", game, "custom_rewards.json")
+
+    ## Super mariokart
+    # game = "SuperMarioKart-Snes"
+    # scenario = os.path.join(code_location, "scenarios", game, "custom_rewards.json")
     # state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "MarioCircuit1.GP.50cc.1P.Luigi.Start.state")
     # state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "DonutPlains1.GP.50cc.1P.Koopa.Start.state")
-    state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "GhostHouse1.GP.50cc.1P.Koopa.Start.state")
+    # state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "GhostHouse1.GP.50cc.1P.Koopa.Start.state")
+    ## Smash-TV
+    game = "SmashTV-Snes"
+    scenario = os.path.join(code_location, "scenarios", game, "custom_rewards.json")
+    state = os.path.join(retro.data.DATA_PATH, "data", "contrib", game, "1P.Normal.Arena1.state")
     main(game, state, scenario)

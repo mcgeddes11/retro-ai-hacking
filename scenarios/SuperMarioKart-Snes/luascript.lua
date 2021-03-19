@@ -8,6 +8,7 @@
 
 frames_since_checkpoint_update = 0
 previous_global_checkpoint = 0
+on_track = true
 
 function get_global_checkpoint()
     local global_checkpoint, lap_number
@@ -68,8 +69,28 @@ function get_lap_number()
     return data.lapnumber_code - 128
 end
 
+function did_fall_off_track()
+    if on_track then
+        if data.status_flag == 4 or data.status_flag == 6 or data.status_flag == 8 then
+            on_track = false
+            return true
+        else
+            return false
+        end
+    else
+        if data.status_flag == 2 or data.status_flag == 4 then
+            on_track = true
+            return true
+        else
+            return false
+        end
+
+    end
+end
+
+
 function compute_reward()
-    local total_reward, global_checkpoint, checkpoint_reward, speed_reward, surface_reward, backward_penalty
+    local total_reward, global_checkpoint, checkpoint_reward, speed_reward, surface_reward, backward_penalty, fall_penalty
     total_reward = 0
 
     -- Checkpoint rewards
@@ -90,14 +111,20 @@ function compute_reward()
         speed_reward = 0
     end
     -- Surface reward
-    if data.surface_type_code == 40 then
+    -- TODO: fix this so it works on all tracks (choco island mud for eg)
+    if data.surface_type_code == 40 or data.surface_type_code == 42 or data.surface_type_code == 14 then
         surface_reward = 0
     else
         surface_reward = -1.0
     end
 
+    if did_fall_off_track() then
+        fall_penalty = -200
+    else
+        fall_penalty = 0
+    end
 
-    total_reward = speed_reward + checkpoint_reward + surface_reward
+    total_reward = speed_reward + checkpoint_reward + surface_reward + fall_penalty
 --    total_reward = checkpoint_reward
     return total_reward
 end
